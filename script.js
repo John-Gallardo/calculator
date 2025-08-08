@@ -20,6 +20,10 @@ function divide(num1, num2) {
 }
 
 function operate(operator, num1, num2) {
+    /* Performs a math operation given these 3 parameters. Returns null if any are invalid */
+    if (!operator || !num1 || !num2)
+        return null;
+
     let result;
     switch (operator) {
         case "+":
@@ -47,9 +51,12 @@ function round(num) {
 
 function updateScreen(newText) {
     let lastElement = onScreenContent[onScreenContent.length - 1];
-    if (functionOperators.includes(lastElement) && functionOperators.includes(newText))
+    // Used to prevent user from inputting two operators in a row and replacing the operator with a number (if there is only an operator)
+    let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
+    let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.length === 1
+    if (consecutiveOperators || onlyOperator)
         onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
-    else 
+    else
         onScreen.textContent += newText;
     onScreenContent = onScreen.textContent;
 }
@@ -86,8 +93,10 @@ function main(event) {
     if (newText === "=") {
         let [operator, num1, num2] = resolveString();
         let result = operate(operator, num1, num2);
-        clearScreen();
-        updateScreen(result);
+        if (result != null) {
+            clearScreen();
+            updateScreen(result);
+        }
     } else if (newText === "AC")
         clearScreen();
     else
