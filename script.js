@@ -53,7 +53,7 @@ function updateScreen(newText) {
     let lastElement = onScreenContent[onScreenContent.length - 1];
     // Used to prevent user from inputting two operators in a row and replacing the operator with a number (if there is only an operator)
     let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
-    let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.length === 1
+    let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.length === 1;
     if (consecutiveOperators || onlyOperator)
         onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
     else
@@ -67,20 +67,12 @@ function clearScreen() {
 }
 
 function resolveString() {
-    /* Linear parse through string */
-    let operator = "", num1 = "", num2 = "", i = 0;
-    // Iterate until operator
-    while (!functionOperators.includes(onScreenContent[i]))
-        num1 += onScreenContent[i++];
+    // regex expression checks for first occurence of a function operator
+    let [num1, num2] = onScreenContent.split(/[\+\-x÷]/);
+    let operator = onScreenContent[num1.length];
     num1 = Number(num1);
-    operator = onScreenContent[i++];  // Increment to move to next number
-    // Iterate through rest
-    while (i < onScreenContent.length) {
-        num2 += onScreenContent[i];
-        i++;
-    }
     num2 = Number(num2);
-    return [operator, num1, num2];
+    return [num1, operator, num2];
 }
 
 function main(event) {
@@ -91,7 +83,7 @@ function main(event) {
 
     let newText = button.textContent;
     if (newText === "=") {
-        let [operator, num1, num2] = resolveString();
+        let [num1, operator, num2] = resolveString();
         let result = operate(operator, num1, num2);
         if (result != null) {
             clearScreen();
