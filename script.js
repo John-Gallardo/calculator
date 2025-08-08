@@ -1,5 +1,7 @@
 let operator = null;
 let num1 = 0, num2 = 0;
+let onScreen = document.querySelector("#onScreen");
+let onScreenContent = onScreen.textContent;
 
 function add(num1, num2) {
     return num1 + num2;
@@ -35,4 +37,9 @@ function operate(operator, num1, num2) {
         default:
             alert("Error: Invalid operator");
     }
+}
+
+function updateScreen(newText) {
+    onScreen.textContent = newText;
+    onScreenContent = onScreen.textContent;
 }
