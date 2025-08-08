@@ -1,7 +1,9 @@
 const buttonContainer = document.querySelector("#buttonContainer");
 const onScreen = document.querySelector("#onScreen");
 const functionOperators = ["-", "x", "+", "÷"];
-let onScreenContent = "";
+// isImmediateResult is for checking if onScreenContent is from an operation
+let onScreenContent = {string: "", isImmediateResult: false};
+
 
 function add(num1, num2) {
     return num1 + num2;
@@ -51,29 +53,37 @@ function round(num) {
 }
 
 function updateScreen(newText) {
-    let lastElement = onScreenContent[onScreenContent.length - 1];
-    // Used to prevent user from inputting two operators in a row and replacing the operator with a number (if there is only an operator)
+    let lastElement = onScreenContent.string[onScreenContent.string.length - 1];
     let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
-    let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.length === 1;
-    console.log(newText);
+    let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.string.length === 1;
+    let isNumber = !functionOperators.includes(newText);
+    // Prevent user from entering consecutive operators or to replace operator with a number (if there is only an operator)
     if (consecutiveOperators || onlyOperator)
         onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
     else if (newText === Infinity)
         onScreen.textContent = "Error";
-    else
+    // For replacing result if needed. (Ex. 5 + 2 = 7, press 3 then 7 gets replaced with 3)
+    else if (onScreenContent.isImmediateResult) {
+        onScreenContent.isImmediateResult = false;
+        if (isNumber) 
+            onScreen.textContent = newText;
+        else 
+            // Append operator immediately
+            onScreen.textContent += newText;
+    } else 
         onScreen.textContent += newText;
-    onScreenContent = onScreen.textContent;
+    onScreenContent.string = onScreen.textContent;
 }
 
 function clearScreen() {
     onScreen.textContent = "";
-    onScreenContent = onScreen.textContent;
+    onScreenContent.string = onScreen.textContent;
 }
 
 function resolveString() {
     // regex expression checks for first occurence of a function operator
-    let [num1, num2] = onScreenContent.split(/[\+\-x÷]/);
-    let operator = onScreenContent[num1.length];
+    let [num1, num2] = onScreenContent.string.split(/[\+\-x÷]/);
+    let operator = onScreenContent.string[num1.length];
     num1 = Number(num1);
     num2 = Number(num2);
     return [num1, operator, num2];
@@ -93,6 +103,7 @@ function main(event) {
             if (result != null) {
                 clearScreen();
                 updateScreen(result);
+                onScreenContent.isImmediateResult = true;
             }
             break;
         case "AC":
