@@ -1,7 +1,7 @@
 const buttonContainer = document.querySelector("#buttonContainer");
 const onScreen = document.querySelector("#onScreen");
 const functionOperators = ["-", "x", "+", "÷"];
-let onScreenContent = null, numOperators = null;
+let onScreenContent = "";
 
 function add(num1, num2) {
     return num1 + num2;
@@ -46,7 +46,11 @@ function round(num) {
 }
 
 function updateScreen(newText) {
-    onScreen.textContent += newText;
+    let lastElement = onScreenContent[onScreenContent.length - 1];
+    if (functionOperators.includes(lastElement) && functionOperators.includes(newText))
+        onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
+    else 
+        onScreen.textContent += newText;
     onScreenContent = onScreen.textContent;
 }
 
@@ -79,7 +83,7 @@ function main(event) {
         return;
 
     let newText = button.textContent;
-    if (newText === "=" || numOperators === 2) {  // TODO: FINISH IMPLEMENTING numOperators
+    if (newText === "=") {
         let [operator, num1, num2] = resolveString();
         let result = operate(operator, num1, num2);
         clearScreen();
