@@ -21,7 +21,8 @@ function divide(num1, num2) {
 
 function operate(operator, num1, num2) {
     /* Performs a math operation given these 3 parameters. Returns null if any are invalid */
-    if (!operator || !num1 || !num2)
+    // Note: Check for numbers are done as 0 is a valid number
+    if (!operator || (!num1 && num1 !== 0) || (!num2 && num2 !== 0))
         return null;
 
     let result;
@@ -54,8 +55,11 @@ function updateScreen(newText) {
     // Used to prevent user from inputting two operators in a row and replacing the operator with a number (if there is only an operator)
     let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
     let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.length === 1;
+    console.log(newText);
     if (consecutiveOperators || onlyOperator)
         onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
+    else if (newText === Infinity)
+        onScreen.textContent = "Error";
     else
         onScreen.textContent += newText;
     onScreenContent = onScreen.textContent;
@@ -82,17 +86,21 @@ function main(event) {
         return;
 
     let newText = button.textContent;
-    if (newText === "=") {
-        let [num1, operator, num2] = resolveString();
-        let result = operate(operator, num1, num2);
-        if (result != null) {
+    switch (newText) {
+        case "=":
+            let [num1, operator, num2] = resolveString();
+            let result = operate(operator, num1, num2);
+            if (result != null) {
+                clearScreen();
+                updateScreen(result);
+            }
+            break;
+        case "AC":
             clearScreen();
-            updateScreen(result);
-        }
-    } else if (newText === "AC")
-        clearScreen();
-    else
-        updateScreen(newText);
+            break;
+        default:
+            updateScreen(newText);
+    }
 }
 
 buttonContainer.addEventListener("click", main);
