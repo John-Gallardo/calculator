@@ -1,23 +1,27 @@
 const buttonContainer = document.querySelector("#buttonContainer");
 const onScreen = document.querySelector("#onScreen");
 const functionOperators = ["-", "x", "+", "÷"];
-// isImmediateResult is for checking if onScreenContent is from an operation
+// isImmediateResult is for checking if all onScreenContent is from the previous operation
 let onScreenContent = {string: "", isImmediateResult: false};
-
+let numOperators = 0;
 
 function add(num1, num2) {
+    numOperators--;
     return num1 + num2;
 }
 
 function subtract(num1, num2) {
+    numOperators--;
     return num1 - num2;
 }
 
 function multiply(num1, num2) {
+    numOperators--;
     return num1 * num2;
 }
 
 function divide(num1, num2) {
+    numOperators--;
     return num1 / num2;
 }
 
@@ -53,12 +57,17 @@ function round(num) {
 }
 
 function updateScreen(newText) {
+    /* Updates Screen & increments numOperators if there is an operator on screen. */
     let lastElement = onScreenContent.string[onScreenContent.string.length - 1];
     let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
     let onlyOperator = functionOperators.includes(lastElement) && onScreenContent.string.length === 1;
     let isNumber = !functionOperators.includes(newText);
+
+    if (functionOperators.includes(newText) && !functionOperators.includes(lastElement))
+        numOperators++;
+
     // Prevent user from entering consecutive operators or to replace operator with a number (if there is only an operator)
-    if (consecutiveOperators || onlyOperator)
+    if (consecutiveOperators || onlyOperator) 
         onScreen.textContent = onScreen.textContent.replace(lastElement, newText);
     else if (newText === Infinity)
         onScreen.textContent = "Error";
@@ -96,22 +105,24 @@ function main(event) {
         return;
 
     let newText = button.textContent;
-    switch (newText) {
-        case "=":
-            let [num1, operator, num2] = resolveString();
-            let result = operate(operator, num1, num2);
-            if (result != null) {
-                clearScreen();
-                updateScreen(result);
-                onScreenContent.isImmediateResult = true;
-            }
-            break;
-        case "AC":
+    let lastElement = onScreenContent.string[onScreenContent.string.length - 1];
+    let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
+    if (newText === "=" || (functionOperators.includes(newText) && numOperators === 1 && consecutiveOperators === false)) {
+        let [num1, operator, num2] = resolveString();
+        let result = operate(operator, num1, num2);
+        if (result != null) {
             clearScreen();
-            break;
-        default:
+            updateScreen(result);
+            onScreenContent.isImmediateResult = true;
+        }
+        if (functionOperators.includes(newText))
             updateScreen(newText);
+    //
     }
+    else if (newText === "AC")
+        clearScreen();
+    else 
+        updateScreen(newText);
 }
 
 buttonContainer.addEventListener("click", main);
