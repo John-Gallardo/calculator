@@ -40,7 +40,7 @@ function operate(operator, num1, num2) {
             result = subtract(num1, num2);
             break;
         case "x":
-            result = multiply(num1, num2);
+            result = round(multiply(num1, num2));
             break;
         case "÷":
             result = round(divide(num1, num2));
