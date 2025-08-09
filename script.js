@@ -107,6 +107,7 @@ function main(event) {
     let newText = button.textContent;
     let lastElement = onScreenContent.string[onScreenContent.string.length - 1];
     let consecutiveOperators = functionOperators.includes(lastElement) && functionOperators.includes(newText);
+    // Second portion allows evaluating expressions by pressing another function operator. (Ex. 5 + 2, then press x evaluates to 7)
     if (newText === "=" || (functionOperators.includes(newText) && numOperators === 1 && consecutiveOperators === false)) {
         let [num1, operator, num2] = resolveString();
         let result = operate(operator, num1, num2);
@@ -117,7 +118,6 @@ function main(event) {
         }
         if (functionOperators.includes(newText))
             updateScreen(newText);
-    //
     }
     else if (newText === "AC")
         clearScreen();
