@@ -34,10 +34,10 @@ function operate(operator, num1, num2) {
     let result;
     switch (operator) {
         case "+":
-            result = add(num1, num2);
+            result = round(add(num1, num2));
             break;
         case "-":
-            result = subtract(num1, num2);
+            result = round(subtract(num1, num2));
             break;
         case "x":
             result = round(multiply(num1, num2));
@@ -90,9 +90,19 @@ function clearScreen() {
 }
 
 function resolveString() {
+    // Check if number is negative
+    let num1 = "", num2 = "";
+    if (onScreenContent.string[0] === "-") {
+        onScreenContent.string = onScreenContent.string.replace("-", "");
+        num1 += "-";
+    }
+    console.log(onScreenContent);
     // regex expression checks for first occurence of a function operator
-    let [num1, num2] = onScreenContent.string.split(/[\+\-x÷]/);
-    let operator = onScreenContent.string[num1.length];
+    let expressionSplit = onScreenContent.string.split(/[\+\-x÷]/);
+    num1 += expressionSplit[0];
+    num2 = expressionSplit[1];
+    // Specifically using expressionSplit[0].length since num1 may or may not have a negative sign
+    let operator = onScreenContent.string[expressionSplit[0].length];
     num1 = Number(num1);
     num2 = Number(num2);
     return [num1, operator, num2];
